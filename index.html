@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简易乘法计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .formula {
+            background: #f0f5ff;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            color: #4776E6;
+            font-weight: 600;
+            border-bottom: 1px solid #e0e7ff;
+        }
+        
+        .calculator {
+            padding: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 16px;
+        }
+        
+        .input-container {
+            position: relative;
+            display: flex;
+        }
+        
+        .input-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4776E6;
+            font-size: 20px;
+        }
+        
+        .input-container input {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .input-container input:focus {
+            border-color: #4776E6;
+            box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.2);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(71, 118, 230, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(71, 118, 230, 0.4);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border-left: 5px solid #4776E6;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-title {
+            font-size: 18px;
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+        
+        .result-value {
+            font-size: 42px;
+            font-weight: 700;
+            color: #4776E6;
+            margin: 10px 0;
+        }
+        
+        .calculation-steps {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #4a5568;
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .history {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .history h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #historyList {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        #historyList li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        #historyList li:last-child {
+            border-bottom: none;
+        }
+        
+        .history-value {
+            font-weight: 600;
+            color: #4776E6;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .calculator {
+                padding: 20px;
+            }
+            
+            .result-value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calculator"></i>借支计算器</h1>
+            <p>输入工时，计算员工可借支金额</p >
+        </div>
+        
+        <div class="formula">
+           工时以17/H计算
+        </div>
+        
+        <div class="calculator">
+            <div class="input-group">
+                <label for="numberInput">输入数值 (x):</label>
+                <div class="input-container">
+                    <i class="fas fa-hashtag"></i>
+                    <input type="number" id="numberInput" placeholder="请输入员工工时..." autofocus>
+                </div>
+            </div>
+            
+            <button class="calculate-btn" id="calculateBtn">
+                <i class="fas fa-calculator"></i> 计算
+            </button>
+            
+            <div class="result-container" id="resultContainer">
+                <div class="result-title">计算结果:</div>
+                <div class="result-value" id="resultValue">0</div>
+                
+                <div class="calculation-steps">
+                    <div><strong>计算步骤:</strong></div>
+                    <div>1. 输入工时 (x) = <span id="inputValue">0</span></div>
+                    <div>2. x × 17 = <span id="step1">0</span></div>
+                    <div>3. × 0.3 = <span id="step2">0</span></div>
+                    <div>4. 最终借支金额 = <span id="finalResult">0</span></div>
+                </div>
+            </div>
+            
+            <div class="history" id="historySection">
+                <h3><i class="fas fa-history"></i> 计算历史</h3>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 借支计算器  彭魏专用</p >
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInput = document.getElementById('numberInput');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultValue = document.getElementById('resultValue');
+            const historySection = document.getElementById('historySection');
+            const historyList = document.getElementById('historyList');
+            const inputValue = document.getElementById('inputValue');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const finalResult = document.getElementById('finalResult');
+            
+            let history = [];
+            
+            // 计算函数
+            function calculate() {
+                const x = parseFloat(numberInput.value);
+                
+                if (isNaN(x)) {
+                    alert('请输入有效的数字');
+                    return;
+                }
+                
+                // 计算步骤
+                const step1Result = x * 17;
+                const step2Result = step1Result * 0.3;
+                const result = step2Result;
+                
+                // 显示结果
+                inputValue.textContent = x;
+                step1.textContent = step1Result.toFixed(2);
+                step2.textContent = step2Result.toFixed(2);
+                finalResult.textContent = result.toFixed(2);
+                resultValue.textContent = result.toFixed(2);
+                
+                // 显示结果容器
+                resultContainer.style.display = 'block';
+                
+                // 添加到历史记录
+                addToHistory(x, result);
+                
+                // 显示历史记录区域
+                historySection.style.display = 'block';
+            }
+            
+            // 添加到历史记录
+            function addToHistory(input, result) {
+                history.unshift({
+                    input: input,
+                    result: result,
+                    timestamp: new Date()
+                });
+                
+                // 只保留最近的5条记录
+                if (history.length > 5) {
+                    history.pop();
+                }
+                
+                updateHistoryList();
+            }
+            
+            // 更新历史记录列表
+            function updateHistoryList() {
+                historyList.innerHTML = '';
+                
+                history.forEach(item => {
+                    const li = document.createElement('li');
+                    
+                    const dateStr = item.timestamp.toLocaleTimeString();
+                    
+                    li.innerHTML = `
+                        <div>
+                            <span class="history-value">${item.input}</span> 
+                            → 结果: <span class="history-value">${item.result.toFixed(2)}</span>
+                        </div>
+                        <div>${dateStr}</div>
+                    `;
+                    
+                    historyList.appendChild(li);
+                });
+            }
+            
+            // 事件监听
+            calculateBtn.addEventListener('click', calculate);
+            
+            // 支持按Enter键计算
+            numberInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    calculate();
+                }
+            });
+            
+            // 示例计算
+            setTimeout(() => {
+                numberInput.value = "0";
+                calculate();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
